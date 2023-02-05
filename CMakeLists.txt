@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(BigIntTests)
+project(bigIntTests)
 
 find_package(GTest REQUIRED)
 
