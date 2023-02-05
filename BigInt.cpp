@@ -97,6 +97,8 @@ std::string sumOfPos(std::string num1, std::string num2)
 
 std::string diffOfPos(std::string num1, std::string num2)
 {
+	if(num1 == "0" && num2 != "0")
+		return '-' + num2;
 	std::string result = "";
 	if(isSmaller(num1, num2))
 		std::swap(num1, num2);
@@ -180,6 +182,8 @@ BigInt operator*(const BigInt& num1, const BigInt& num2)
 {
 	if(num1._number == "0" || num2._number == "0")
 		return BigInt("0");
+	if(num1._number[0] == '-' && num2._number[0] == '-')
+		return BigInt(num1.mod() * num2.mod());
 	long len1 = num1._number.length();
 	long len2 = num2._number.length();
 	std::string product = "";
@@ -199,7 +203,6 @@ BigInt operator*(const BigInt& num1, const BigInt& num2)
 			val.push_back('0');
 		product = sumOfPos(product, val);
 	}
-	
 	return BigInt(product);
 }
 

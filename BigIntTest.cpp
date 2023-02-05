@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "BigInt.h"
+#include "BigInt.cpp"
 
 TEST(incrTest, increment)
 {
@@ -24,35 +24,35 @@ TEST(decrTest, decrement)
         };
 	for(auto [num, num_minus_one] : ExpectedList)
         {
-                EXPECT_EQ(++num, num_minus_one);
+                EXPECT_EQ(--num, num_minus_one);
         }
 }
 
 TEST(sumTest, adding)
 {
-	const std::vector<std::pair<BigInt, BigInt>> ExpectedList = {
-                { BigInt("0"), BigInt("-1") + BigInt("1") },
-                { BigInt("-100"), BigInt("-50") + BigInt("-50") },
-                { BigInt("-4"), BigInt("-101") + BigInt("97") },
-                { BigInt("5"), BigInt("120") + BigInt("-115") },
-        };
-	for(auto [num, sum] : ExpectedList)
-        {
-                EXPECT_EQ(++num, sum);
-        }
+        ASSERT_EQ(BigInt("-1") + BigInt("1"), BigInt("0"));
+	ASSERT_EQ(BigInt("0") + BigInt("-50"), BigInt("-50"));
+  	ASSERT_EQ(BigInt("-101") + BigInt("97"), BigInt("-4"));
+   	ASSERT_EQ(BigInt("120") + BigInt("-115"), BigInt("5"));
+      
 
 }
 
 TEST(substractTest, substraction)
 {
-	const std::vector<std::pair<BigInt, BigInt>> ExpectedList = {
-                { BigInt("0"), BigInt("100") - BigInt("100") },
-                { BigInt("100"), BigInt("97") - BigInt("-3") },
-                { BigInt("-111"), BigInt("-100") - BigInt("11") },
-                { BigInt("-8"), BigInt("-333") - BigInt("-325") }
-        };
+	ASSERT_EQ(BigInt("0"), BigInt("100") - BigInt("100"));
+        ASSERT_EQ(BigInt("100"), BigInt("97") - BigInt("-3"));
+        ASSERT_EQ(BigInt("-111"), BigInt("-100") - BigInt("11"));
+        ASSERT_EQ(BigInt("-8"), BigInt("-333") - BigInt("-325"));
 }
 
+TEST(mulTest, multiplication)
+{
+	ASSERT_EQ(BigInt("0") * BigInt("-23"), BigInt("0"));
+	ASSERT_EQ(BigInt("-10") * BigInt("10"), BigInt("-100"));
+	ASSERT_EQ(BigInt("-10") * BigInt("-10"), BigInt("100"));
+
+}
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
