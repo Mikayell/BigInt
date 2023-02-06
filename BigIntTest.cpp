@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "BigInt.cpp"
+#include "BigInt.h"
 
 TEST(incrTest, increment)
 {
