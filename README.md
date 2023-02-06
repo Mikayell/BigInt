@@ -1,1 +1,1 @@
-# BigInt
+Simple BigInt class.
