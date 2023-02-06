@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <cstddef>
+#include <cstdlib>
 #include "BigInt.h"
 
 void removeZeros(std::string& num)
@@ -11,6 +12,23 @@ void removeZeros(std::string& num)
                 num = "0";
         else
                 num = num.substr(num.find_first_not_of('0'));
+}
+
+bool BigInt::isNegative() const
+{
+	return _number[0] == '-';
+}
+
+BigInt BigInt::oppSign() const
+{
+	if(_number == "0")
+		return BigInt("0");
+	if(this -> isNegative())
+	{
+		std::string str = this -> mod();
+		return BigInt(str);
+	}
+	return BigInt('-' + _number);
 }
 
 BigInt::BigInt(std::string num)
@@ -139,7 +157,7 @@ std::string diffOfPos(std::string num1, std::string num2)
 BigInt operator+(const BigInt& num1, const BigInt& num2)
 {
 	std::string sum;
-	if((num1._number)[0] == '-' && (num2._number)[0] != '-')
+	if(num1.isNegative() && !num2.isNegative())
 	{
 		if(isSmaller(num1.mod(), num2._number))
 			return BigInt(diffOfPos(num2._number, num1.mod()));
@@ -147,7 +165,7 @@ BigInt operator+(const BigInt& num1, const BigInt& num2)
 			return BigInt('-' + diffOfPos(num1.mod(), num2._number));
 		return BigInt("0"); 
 	}
-	if((num1._number)[0] != '-' && (num2._number)[0] == '-') 
+	if(!num1.isNegative() && num2.isNegative()) 
 	{
 		if(isSmaller(num1._number, num2.mod()))
 			return BigInt('-' + diffOfPos(num2.mod(), num1._number));
@@ -155,7 +173,7 @@ BigInt operator+(const BigInt& num1, const BigInt& num2)
 			return BigInt(diffOfPos(num1._number, num2.mod()));
 		return BigInt(diffOfPos(num1._number, num2._number)); // !!!
 	}
-	if((num1._number)[0] == '-' && (num2._number)[0] == '-')
+	if(num1.isNegative() && num2.isNegative())
 		return BigInt('-' + sumOfPos(num1.mod(), num2.mod()));
 	return BigInt(sumOfPos(num1._number, num2._number));
 }
@@ -163,11 +181,11 @@ BigInt operator+(const BigInt& num1, const BigInt& num2)
 BigInt operator-(const BigInt& num1, const BigInt& num2)
 {
 	std::string result;
-	if(num1._number[0] != '-' && num2._number[0] == '-')
+	if(!num1.isNegative() && num2.isNegative())
 		return BigInt(sumOfPos(num1._number, num2.mod()));
-	if(num1._number[0] == '-' && num2._number[0] != '-')
-		return BigInt('-' + sumOfPos(num1._number.substr(1), num2._number));
-	if(num1._number[0] == '-' && num2._number[0] == '-')
+	if(num1.isNegative() && !num2.isNegative())
+		return BigInt('-' + sumOfPos(num1.mod(), num2._number));
+	if(num1.isNegative() && num2.isNegative())
 	{
 		if(isSmaller(num1.mod(), num2.mod())) 
 			return BigInt(diffOfPos(num2.mod(), num1.mod()));
@@ -182,8 +200,12 @@ BigInt operator*(const BigInt& num1, const BigInt& num2)
 {
 	if(num1._number == "0" || num2._number == "0")
 		return BigInt("0");
-	if(num1._number[0] == '-' && num2._number[0] == '-')
+	if(num1.isNegative() && num2.isNegative())
 		return BigInt(num1.mod() * num2.mod());
+	if(num1.isNegative() && !num2.isNegative())
+		return (num1.oppSign() * num2).oppSign();
+	if(!num1.isNegative() && num2.isNegative())
+		return (num1 * num2.oppSign()).oppSign();
 	long len1 = num1._number.length();
 	long len2 = num2._number.length();
 	std::string product = "";
@@ -203,11 +225,18 @@ BigInt operator*(const BigInt& num1, const BigInt& num2)
 			val.push_back('0');
 		product = sumOfPos(product, val);
 	}
+	removeZeros(product);
 	return BigInt(product);
 }
 
 BigInt operator/(const BigInt& num, const long divisor)
 {
+	if(num.isNegative() && divisor > 0)
+		return BigInt("-1") * (num.mod() / divisor);
+	if(!num.isNegative() && divisor < 0)
+		return BigInt("-1") * (num / abs(divisor));
+	if(num.isNegative() && divisor < 0)
+		return num.mod() / abs(divisor);	
 	long len = num._number.length();
 	std::string result = "";
 	int i = 0;
@@ -232,6 +261,11 @@ BigInt& BigInt::operator=(const BigInt& rhs)
 bool operator==(const BigInt& num1, const BigInt& num2)
 {
 	return num1._number == num2._number;
+}
+
+bool operator!=(const BigInt& num1, const BigInt& num2)
+{
+	return !(num1 == num2);
 }
 
 BigInt& BigInt::operator++()
@@ -270,6 +304,33 @@ BigInt& BigInt::operator/=(const long rhs)
 {
 	*this = *this / rhs;
 	return *this;
+}
+
+bool operator>(const BigInt& num1, const BigInt& num2)
+{
+	if(num1.isNegative() && !num2.isNegative())
+		return false;
+	if(!num1.isNegative() && num2.isNegative())
+		return true;
+	if(num1.isNegative() && num2.isNegative())
+		return isSmaller(num1.mod(), num2.mod());
+	return (!isSmaller(num1._number, num2._number) && num1 != num2);
+
+}
+
+bool operator>=(const BigInt& num1, const BigInt& num2)
+{
+	return (num1 > num2) || (num1 == num2);
+}
+
+bool operator<(const BigInt& num1, const BigInt& num2)
+{
+	return !(num1 > num2) && (num1 != num2);
+}
+
+bool operator<=(const BigInt& num1, const BigInt& num2)
+{
+	return (num1 < num2) || (num1 == num2);
 }
 
 std::ostream& operator<<(std::ostream& out, const BigInt& obj)

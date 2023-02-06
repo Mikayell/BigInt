@@ -51,6 +51,25 @@ TEST(mulTest, multiplication)
 	ASSERT_EQ(BigInt("0") * BigInt("-23"), BigInt("0"));
 	ASSERT_EQ(BigInt("-10") * BigInt("10"), BigInt("-100"));
 	ASSERT_EQ(BigInt("-10") * BigInt("-10"), BigInt("100"));
+	ASSERT_EQ(BigInt("-1") * BigInt("-10"), BigInt("10"));
+	ASSERT_EQ(BigInt("2") * BigInt("-10"), BigInt("-20"));
+}
+TEST(divTest, division)
+{
+	ASSERT_EQ(BigInt("25") / 5, BigInt("5"));
+	ASSERT_EQ(BigInt("16") / -4, BigInt("-4"));
+	ASSERT_EQ(BigInt("-16") / 4, BigInt("-4"));
+	ASSERT_EQ(BigInt("-25") / -5, BigInt("5"));
+	ASSERT_EQ(BigInt("3") / -166, BigInt("0"));
+}
+TEST(compOperators, comparison)
+{
+	ASSERT_EQ(BigInt("1") > BigInt("-1"), true);
+	ASSERT_EQ(BigInt("1") > BigInt("0"), true);
+	ASSERT_EQ(BigInt("0") >= BigInt("-1"), true);
+	ASSERT_EQ(BigInt("-12") < BigInt("-1"), true);
+	ASSERT_EQ(BigInt("10") > BigInt("7"), true);
+	ASSERT_EQ(BigInt("-23") <= BigInt("-23"), true);
 
 }
 int main(int argc, char **argv) {
